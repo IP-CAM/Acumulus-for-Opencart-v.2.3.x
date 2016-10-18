@@ -24,7 +24,7 @@ class ControllerModuleAcumulus extends Controller
             // Load autoloader and then our helper that contains OC1 and OC2
             // and admin and catalog shared code.
             require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
-            $this->ocHelper = new OcHelper($this->registry, 'OpenCart\OpenCart2');
+            $this->ocHelper = new OcHelper($this->registry, 'OpenCart\OpenCart2\OpenCart23');
         }
     }
 
