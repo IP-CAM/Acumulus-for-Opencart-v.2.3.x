@@ -32,12 +32,21 @@ class ControllerModuleAcumulus extends Controller
      * Event handler that executes on the creation or update of an order.
      *
      * @param string $route
+     *   checkout/order/addOrder or checkout/order/addOrderHistory.
+     * @param array $args
+     *   Array with numeric indices containing the arguments as passed to the
+     *   model method.
+     *   When route = checkout/order/addOrder it contains: order (but without
+     *   order_id as that will be created and assigned by the method).
+     *   When route = checkout/order/addOrderHistory it contains: order_id,
+     *   order_status_id, comment, notify, override.
      * @param mixed $output
-     * @param int $order_id
-     * param int $order_status_id
+     *   If passed by event checkout/order/addOrder it contains the order_id of
+     *   the just created order. It is null for checkout/order/addOrderHistory.
      */
-    public function eventOrderUpdate($route, $output, $order_id/*, $order_status_id*/)
+    public function eventOrderUpdate($route, $args, $output)
     {
+        $order_id = $route === 'checkout/order/addOrderHistory' ? $args[0] : $output;
         $this->ocHelper->eventOrderUpdate((int) $order_id);
     }
 }
