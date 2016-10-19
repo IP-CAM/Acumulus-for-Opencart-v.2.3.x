@@ -21,6 +21,11 @@
             <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
+        <?php foreach ($warning_messages as $message) { ?>
+        <div class="alert alert-warning"><i class="fa fa-warning"></i> <?= $message; ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?>
         <?php foreach ($error_messages as $message) { ?>
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?= $message; ?>
             <button type="button" class="close" data-dismiss="alert">&times;</button>
