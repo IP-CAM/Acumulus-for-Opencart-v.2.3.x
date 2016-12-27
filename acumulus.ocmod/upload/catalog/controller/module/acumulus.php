@@ -1,15 +1,17 @@
 <?php
 
-use Siel\Acumulus\OpenCart\Helpers\OcHelper;
+use Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper;
 
 /** @noinspection PhpUndefinedClassInspection */
-
 /**
  * Class ControllerModuleAcumulus is the Acumulus catalog site controller.
  */
 class ControllerModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
+    static private $staticOcHelper = null;
+
+    /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
     private $ocHelper = null;
 
     /**
@@ -20,11 +22,14 @@ class ControllerModuleAcumulus extends Controller
     public function __construct($registry)
     {
         parent::__construct($registry);
-        if ($this->ocHelper === null) {
-            // Load autoloader and then our helper that contains OC1 and OC2
-            // and admin and catalog shared code.
-            require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
-            $this->ocHelper = new OcHelper($this->registry, 'OpenCart\OpenCart2\OpenCart23');
+        if ($this->ocHelper === NULL) {
+            if (static::$staticOcHelper === NULL) {
+                // Load autoloader and then our helper that contains OC1 and OC2
+                // shared code.
+                require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
+                static::$staticOcHelper = new OcHelper($this->registry, 'OpenCart\OpenCart2\OpenCart23');
+            }
+            $this->ocHelper = static::$staticOcHelper;
         }
     }
 

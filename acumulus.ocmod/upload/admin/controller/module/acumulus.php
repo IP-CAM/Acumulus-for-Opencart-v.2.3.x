@@ -8,10 +8,10 @@ use Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper;
  */
 class ControllerModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
     static private $staticOcHelper = null;
 
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
     private $ocHelper = null;
 
     /**
