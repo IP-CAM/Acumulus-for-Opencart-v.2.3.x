@@ -93,8 +93,9 @@ class ControllerModuleAcumulus extends Controller
      * @param array $data
      *   The data as will be passed to the view.
      */
-    public function eventViewColumnLeft($route, &$data)
+    public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data)
     {
+        /** @noinspection PhpUndefinedFieldInspection */
         if ($this->user->hasPermission('access', 'module/acumulus')) {
             $this->ocHelper->eventViewColumnLeft($data['menus']);
         }
