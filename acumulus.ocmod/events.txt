@@ -1,6 +1,8 @@
 Acumulus module events
 =======================
 
+@todo: This file is not up to date. Describe all 3 events.
+
 This file documents the events that the Acumulus module defines. Currently only
 1 event is defined:
 

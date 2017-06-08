@@ -6,11 +6,5 @@ exit /B 1;
 )
 set version=%1
 
-
-del OpenCart23-Acumulus-%version%.ocmod.zip 2> nul
-
-rem zip package.
-cd acumulus.ocmod
-"C:\Program Files\7-Zip\7z.exe" a -tzip ..\OpenCart23-Acumulus-%version%.ocmod.zip | findstr /i "Failed Error"
-cd ..
-"C:\Program Files\7-Zip\7z.exe" t OpenCart23-Acumulus-%version%.ocmod.zip | findstr /i "Processing Everything Failed Error"
+call zip22.bat %version%
+call zip23.bat %version%

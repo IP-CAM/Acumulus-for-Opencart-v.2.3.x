@@ -1,14 +1,12 @@
 <?php
 
-use Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper;
-
 /** @noinspection PhpUndefinedClassInspection */
 /**
  * Class ControllerModuleAcumulus is the Acumulus admin site controller.
  */
 class ControllerModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     static private $staticOcHelper = null;
 
     /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
@@ -24,13 +22,26 @@ class ControllerModuleAcumulus extends Controller
         parent::__construct($registry);
         if ($this->ocHelper === NULL) {
             if (static::$staticOcHelper === NULL) {
-                // Load autoloader and then our helper that contains OC1 and OC2
-                // shared code.
+                // Load autoloader, container and then our helper that contains
+                // OC1 and OC2 shared code.
                 require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
-                static::$staticOcHelper = new OcHelper($this->registry, 'OpenCart\OpenCart2\OpenCart23');
+                $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
+                static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
             }
             $this->ocHelper = static::$staticOcHelper;
         }
+    }
+
+    /**
+     * Returns the Shop namespace to use for this OC version.
+     *
+     * @return string
+     *   The Shop namespace to use for this OC version.
+     */
+    protected function getShopNamespace()
+    {
+        $result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
+        return $result;
     }
 
     /**
