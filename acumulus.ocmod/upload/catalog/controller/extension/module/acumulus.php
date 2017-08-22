@@ -2,9 +2,9 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 /**
- * Class ControllerModuleAcumulus is the Acumulus catalog site controller.
+ * This is the Acumulus catalog side controller.
  */
-class ControllerModuleAcumulus extends Controller
+class ControllerExtensionModuleAcumulus extends Controller
 {
     /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     static private $staticOcHelper = null;

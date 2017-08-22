@@ -7,7 +7,7 @@ exit /B 1;
 set version=%1
 
 
-del OpenCart23-Acumulus-%version%.ocmod.zip 2> nul
+del OpenCart22-Acumulus-%version%.ocmod.zip 2> nul
 
 rem zip package.
 cd acumulus.ocmod

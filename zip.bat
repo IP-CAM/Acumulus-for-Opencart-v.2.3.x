@@ -8,3 +8,4 @@ set version=%1
 
 call zip22.bat %version%
 call zip23.bat %version%
+call zip23-example.bat %version%

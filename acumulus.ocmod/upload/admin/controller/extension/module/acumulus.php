@@ -2,9 +2,11 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 /**
- * Class ControllerModuleAcumulus is the Acumulus admin site controller.
+ * This is the Acumulus admin side controller.
+ *
+ * @property \Cart\User $user;
  */
-class ControllerModuleAcumulus extends Controller
+class ControllerExtensionModuleAcumulus extends Controller
 {
     /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     static private $staticOcHelper = null;
@@ -42,6 +44,29 @@ class ControllerModuleAcumulus extends Controller
     {
         $result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
         return $result;
+    }
+
+    /**
+     * Returns whether we are in version 2.3+ or lower.
+     *
+     * @return bool
+     *   True if the version is 2.3 or higher, false otherwise.
+     *
+     */
+    protected function isOc23()
+    {
+        return version_compare(VERSION, '2.3', '>=');
+    }
+
+    /**
+     * Returns the location of the extension's files.
+     *
+     * @return string
+     *   The location of the extension's files.
+     */
+    protected function getLocation()
+    {
+        return $this->isOc23() ? 'extension/module/acumulus' : 'module/acumulus';
     }
 
     /**
@@ -106,8 +131,7 @@ class ControllerModuleAcumulus extends Controller
      */
     public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data)
     {
-        /** @noinspection PhpUndefinedFieldInspection */
-        if ($this->user->hasPermission('access', 'module/acumulus')) {
+        if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventViewColumnLeft($data['menus']);
         }
     }
