@@ -6,6 +6,6 @@ exit /B 1;
 )
 set version=%1
 
-call zip22.bat %version%
+rem call zip22.bat %version%
 call zip23.bat %version%
 call zip23-example.bat %version%
