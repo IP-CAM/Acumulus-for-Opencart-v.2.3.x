@@ -88,6 +88,9 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
     {
         parent::__construct($registry);
         if (static::$container === NULL) {
+            // Load the Acumulus autoloader, so we have access to Acumulus
+            // helper classes.
+            require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
             static::$container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace(), 'nl');
         }
     }
@@ -121,6 +124,41 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
     }
 
     /**
+     * Main controller action: show/process the basic settings form for this
+     * module.
+     */
+    public function index()
+    {
+      $this->load->language('extension/module/customise_acumulus_invoice');
+      $this->document->setTitle($this->language->get('heading_title'));
+      $data['heading_title'] = $this->language->get('heading_title');
+      $data['button_save'] = $this->language->get('button_save');
+
+      // Add an intermediate level to the breadcrumb.
+      $data['breadcrumbs'] = array();
+      $data['breadcrumbs'][] = array(
+        'text' => $this->language->get('text_home'),
+        'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+      );
+      $data['breadcrumbs'][] = array(
+        'text' => $this->language->get('text_extension'),
+        'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true)
+      );
+      $data['breadcrumbs'][] = array(
+        'text' => $this->language->get('heading_title'),
+        'href' => $this->url->link('extension/module/customise_acumulus_invoice', 'token=' . $this->session->data['token'], true)
+      );
+
+      $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true);
+
+      $data['header'] = $this->load->controller('common/header');
+      $data['column_left'] = $this->load->controller('common/column_left');
+      $data['footer'] = $this->load->controller('common/footer');
+
+      $this->response->setOutput($this->load->view('extension/module/customise_acumulus_invoice', $data));
+    }
+
+  /**
      * Installs our events.
      *
      * This will add them to the table 'event' from where they are registered on

@@ -4,3 +4,4 @@
  * (admin/index.php?route=extension/module)
  */
 $_['heading_title'] = 'Customise Acumulus Invoice';
+$_['text_extension']   = 'Extensions';
