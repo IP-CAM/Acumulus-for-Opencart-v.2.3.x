@@ -11,13 +11,15 @@ class ControllerExtensionModuleAcumulus extends Controller
     /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     static private $staticOcHelper = null;
 
-    /** @var \Siel\Acumulus\OpenCart\OpenCart2\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\OpenCart23\Helpers\OcHelper */
     private $ocHelper = null;
 
     /**
      * Constructor.
      *
      * @param \Registry $registry
+     *
+     * @throws \ReflectionException
      */
     public function __construct($registry)
     {
@@ -25,7 +27,7 @@ class ControllerExtensionModuleAcumulus extends Controller
         if ($this->ocHelper === NULL) {
             if (static::$staticOcHelper === NULL) {
                 // Load autoloader, container and then our helper that contains
-                // OC1 and OC2 shared code.
+                // OC1, OC2 and OC3 shared code.
                 require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
                 $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
@@ -47,18 +49,6 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Returns whether we are in version 2.3+ or lower.
-     *
-     * @return bool
-     *   True if the version is 2.3 or higher, false otherwise.
-     *
-     */
-    protected function isOc23()
-    {
-        return version_compare(VERSION, '2.3', '>=');
-    }
-
-    /**
      * Returns the location of the extension's files.
      *
      * @return string
@@ -66,11 +56,13 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     protected function getLocation()
     {
-        return $this->isOc23() ? 'extension/module/acumulus' : 'module/acumulus';
+        return $this->ocHelper->getLocation();
     }
 
     /**
      * Install controller action, called when the module is installed.
+     *
+     * @throws \Exception
      */
     public function install()
     {
@@ -79,6 +71,8 @@ class ControllerExtensionModuleAcumulus extends Controller
 
     /**
      * Uninstall function, called when the module is uninstalled by an admin.
+     *
+     * @throws \Exception
      */
     public function uninstall()
     {
@@ -88,6 +82,8 @@ class ControllerExtensionModuleAcumulus extends Controller
     /**
      * Main controller action: show/process the basic settings form for this
      * module.
+     *
+     * @throws \Exception
      */
     public function index()
     {
@@ -115,6 +111,8 @@ class ControllerExtensionModuleAcumulus extends Controller
      * Explicit confirmation step to allow to retain the settings.
      *
      * The normal uninstall action will unconditionally delete all settings.
+     *
+     * @throws \Exception
      */
     public function confirmUninstall()
     {
