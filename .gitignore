@@ -8,7 +8,7 @@ interdiff.txt
 .idea/*
 
 # Ignore library
-**/Siel/
+**/siel/
 
 # Shared files
 acumulus.ocmod/changelog.txt

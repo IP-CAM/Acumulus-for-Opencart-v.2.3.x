@@ -2,9 +2,10 @@
 
 use Siel\Acumulus\Api;
 use Siel\Acumulus\Invoice\Result;
+use Siel\Acumulus\Invoice\Source;
 
 /**
- * This extension contains example code to:
+ * This module extension contains example code to:
  * - Customise the invoice before it is sent to Acumulus.
  * - Process the results of sending the invoice to Acumulus.
  *
@@ -83,132 +84,133 @@ use Siel\Acumulus\Invoice\Result;
  */
 class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
 {
-	/** @var \Siel\Acumulus\Helpers\ContainerInterface */
-	protected static $container = null;
+    /** @var \Siel\Acumulus\Helpers\ContainerInterface */
+    private static $container = null;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param \Registry $registry
-	 */
-	public function __construct($registry)
-	{
-		parent::__construct($registry);
-		if (static::$container === NULL) {
-			// Load the Acumulus autoloader, so we have access to Acumulus
-			// helper classes.
-			require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
-			static::$container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace(), 'nl');
-		}
-	}
+    /**
+     * Constructor.
+     *
+     * @param \Registry $registry
+     */
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        if (static::$container === NULL) {
+            // Load the Acumulus autoloader, so we have access to Acumulus
+            // helper classes.
+            require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
+            SielAcumulusAutoloader::register();
+            static::$container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace(), 'nl');
+        }
+    }
 
-	/**
-	 * Returns the Shop namespace to use for this OC version.
-	 *
-	 * @return string
-	 *   The Shop namespace to use for this OC version.
-	 */
-	protected function getShopNamespace()
-	{
-		$result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
-		return $result;
-	}
+    /**
+     * Returns the Shop namespace to use for this OC version.
+     *
+     * @return string
+     *   The Shop namespace to use for this OC version.
+     */
+    private function getShopNamespace()
+    {
+        $result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
+        return $result;
+    }
 
-	/**
-	 * Install controller action, called when the module is installed.
-	 *
-	 * @throws \Exception
-	 */
-	public function install()
-	{
-		$this->installEvents();
-	}
+    /**
+     * Install controller action, called when the module is installed.
+     *
+     * @throws \Exception
+     */
+    public function install()
+    {
+        $this->installEvents();
+    }
 
-	/**
-	 * Uninstall function, called when the module is uninstalled by an admin.
-	 *
-	 * @throws \Exception
-	 */
-	public function uninstall()
-	{
-		$this->uninstallEvents();
-	}
+    /**
+     * Uninstall function, called when the module is uninstalled by an admin.
+     *
+     * @throws \Exception
+     */
+    public function uninstall()
+    {
+        $this->uninstallEvents();
+    }
 
-	/**
-	 * Main controller action: show/process the basic settings form for this
-	 * module.
-	 */
-	public function index()
-	{
-		$this->load->language('extension/module/acumulus_customise_invoice');
-		$this->document->setTitle($this->language->get('heading_title'));
-		$data['heading_title'] = $this->language->get('heading_title');
-		$data['button_save'] = $this->language->get('button_save');
+    /**
+     * Main controller action: show/process the basic settings form for this
+     * module.
+     */
+    public function index()
+    {
+        $this->load->language('extension/module/acumulus_customise_invoice');
+        $this->document->setTitle($this->language->get('heading_title'));
+        $data['heading_title'] = $this->language->get('heading_title');
+        $data['button_save'] = $this->language->get('button_save');
 
-		// Add an intermediate level to the breadcrumb.
-		$data['breadcrumbs'] = array();
-		$data['breadcrumbs'][] = array(
-			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
-		);
-		$data['breadcrumbs'][] = array(
-			'text' => $this->language->get('text_extension'),
-			'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true)
-		);
-		$data['breadcrumbs'][] = array(
-			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('extension/module/acumulus_customise_invoice', 'token=' . $this->session->data['token'], true)
-		);
+        // Add an intermediate level to the breadcrumb.
+        $data['breadcrumbs'] = array();
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_home'),
+            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+        );
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_extension'),
+            'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true)
+        );
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('heading_title'),
+            'href' => $this->url->link('extension/module/acumulus_customise_invoice', 'token=' . $this->session->data['token'], true)
+        );
 
-		$data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true);
+        $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true);
 
-		$data['header'] = $this->load->controller('common/header');
-		$data['column_left'] = $this->load->controller('common/column_left');
-		$data['footer'] = $this->load->controller('common/footer');
+        $data['header'] = $this->load->controller('common/header');
+        $data['column_left'] = $this->load->controller('common/column_left');
+        $data['footer'] = $this->load->controller('common/footer');
 
-		$this->response->setOutput($this->load->view('extension/module/acumulus_customise_invoice', $data));
-	}
+        $this->response->setOutput($this->load->view('extension/module/acumulus_customise_invoice', $data));
+    }
 
-	/**
-	 * Installs our events.
-	 *
-	 * This will add them to the table 'event' from where they are registered on
-	 * the start of each request. The controller actions can be found below.
-	 *
-	 * @throws \Exception
-	 */
-	protected function installEvents()
-	{
-		$this->uninstallEvents();
-		$this->model_extension_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
-		$this->model_extension_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
-		$this->model_extension_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
-		$this->model_extension_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
-		$this->model_extension_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
-		$this->model_extension_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
-	}
+    /**
+     * Installs our events.
+     *
+     * This will add them to the table 'event' from where they are registered on
+     * the start of each request. The controller actions can be found below.
+     *
+     * @throws \Exception
+     */
+    private function installEvents()
+    {
+        $this->uninstallEvents();
+        $this->model_extension_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
+        $this->model_extension_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
+        $this->model_extension_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
+        $this->model_extension_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
+        $this->model_extension_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
+        $this->model_extension_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
+    }
 
-	/**
-	 * Removes the Acumulus event handlers from the event table.
-	 *
-	 * @throws \Exception
-	 */
-	protected function uninstallEvents()
-	{
-		$this->load->model('extension/event');
-		$this->model_extension_event->deleteEvent('acumulus_customise_invoice');
-	}
+    /**
+     * Removes the Acumulus event handlers from the event table.
+     *
+     * @throws \Exception
+     */
+    private function uninstallEvents()
+    {
+        $this->load->model('extension/event');
+        $this->model_extension_event->deleteEvent('acumulus_customise_invoice');
+    }
 
-	/**
-	 * Processes the event triggered before an invoice will be sent to Acumulus.
-	 *
+    /**
+     * Processes the event triggered before an invoice will be sent to Acumulus.
+     *
      * @param string $route
      *   The route that triggered this event.
      * @param array $args
      *   The arguments for the events.
-	 */
-	public function invoiceCreatedAfter(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
-	{
+     */
+    public function invoiceCreatedAfter(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
+    {
         /** @var array $invoice */
         $invoice = &$args['invoice'];
         /** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
@@ -216,108 +218,108 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
         /** @var \Siel\Acumulus\Invoice\Result $localResult */
         $localResult = $args['localResult'];
 
-		// Here you can make changes to the raw invoice based on your specific
-		// situation, e.g. setting or correcting tax rates before the completor
-		// strategies execute.
-	}
+        // Here you can make changes to the raw invoice based on your specific
+        // situation, e.g. setting or correcting tax rates before the completor
+        // strategies execute.
+    }
 
 
     /**
-	 * Processes the event triggered before an invoice will be sent to Acumulus.
-	 *
-	 * @param string $route
-	 *   The route that triggered this event.
-	 * @param array $args
-	 *   The arguments for the events.
-	 */
-	public function invoiceSendBefore(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
-	{
-		/** @var array $invoice */
-		$invoice = &$args['invoice'];
-		/** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
-		$invoiceSource = $args['source'];
-		/** @var \Siel\Acumulus\Invoice\Result $localResult */
-		$localResult = $args['localResult'];
+     * Processes the event triggered before an invoice will be sent to Acumulus.
+     *
+     * @param string $route
+     *   The route that triggered this event.
+     * @param array $args
+     *   The arguments for the events.
+     */
+    public function invoiceSendBefore(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
+    {
+        /** @var array $invoice */
+        $invoice = &$args['invoice'];
+        /** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
+        $invoiceSource = $args['source'];
+        /** @var \Siel\Acumulus\Invoice\Result $localResult */
+        $localResult = $args['localResult'];
 
-		// Here you can make changes to the invoice based on your specific
-		// situation, e.g. setting the payment status to its correct value:
-		//$invoice['customer']['invoice']['paymentstatus'] = $this->isOrderPaid($invoiceSource) ? Api::PaymentStatus_Paid : Api::PaymentStatus_Due;
-		$invoice['customer']['test'] = 'test';
-	}
+        // Here you can make changes to the invoice based on your specific
+        // situation, e.g. setting the payment status to its correct value:
+        //$invoice['customer']['invoice']['paymentstatus'] = $this->isOrderPaid($invoiceSource) ? Api::PaymentStatus_Paid : Api::PaymentStatus_Due;
+        $invoice['customer']['test'] = 'test';
+    }
 
-	/**
-	 * Processes the event triggered after an invoice has been sent to Acumulus.
-	 *
-	 * You can add warnings and errors to the result and they will be mailed.
-	 *
-	 * @param string $route
-	 *   The route that triggered this event.
-	 * @param array $args
-	 *   The arguments for the events.
-	 */
-	public function invoiceSendAfter(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
-	{
-		/** @var array $invoice */
-		$invoice = &$args['invoice'];
-		/** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
-		$invoiceSource = $args['source'];
-		/** @var \Siel\Acumulus\Invoice\Result $result */
-		$result = $args['result'];
+    /**
+     * Processes the event triggered after an invoice has been sent to Acumulus.
+     *
+     * You can add warnings and errors to the result and they will be mailed.
+     *
+     * @param string $route
+     *   The route that triggered this event.
+     * @param array $args
+     *   The arguments for the events.
+     */
+    public function invoiceSendAfter(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
+    {
+        /** @var array $invoice */
+        $invoice = &$args['invoice'];
+        /** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
+        $invoiceSource = $args['source'];
+        /** @var \Siel\Acumulus\Invoice\Result $result */
+        $result = $args['result'];
 
-		if ($result->getException()) {
-			// Serious error:
-			if ($result->isSent()) {
-				// During sending.
-			}
-			else {
-				// Before sending.
-			}
-		}
-		elseif ($result->hasError()) {
-			// Invoice was sent to Acumulus but not created due to errors in invoice.
-		}
-		else {
-			// Sent successfully, invoice has been created in Acumulus:
-			if ($result->getWarnings()) {
-				// With warnings.
-			}
-			else {
-				// Without warnings.
-			}
+        if ($result->getException()) {
+            // Serious error:
+            if ($result->isSent()) {
+                // During sending.
+            }
+            else {
+                // Before sending.
+            }
+        }
+        elseif ($result->hasError()) {
+            // Invoice was sent to Acumulus but not created due to errors in invoice.
+        }
+        else {
+            // Sent successfully, invoice has been created in Acumulus:
+            if ($result->getWarnings()) {
+                // With warnings.
+            }
+            else {
+                // Without warnings.
+            }
 
-			$acumulusInvoice = $result->getResponse();
-			// Check if an entry id was created.
-			$acumulusInvoice = $result->getResponse();
-			if (!empty($acumulusInvoice['entryid'])) {
-				$token = $acumulusInvoice['token'];
-				$entryId = $acumulusInvoice['entryid'];
-			}
+            $acumulusInvoice = $result->getResponse();
+            // Check if an entry id was created.
+            $acumulusInvoice = $result->getResponse();
+            if (!empty($acumulusInvoice['entryid'])) {
+                $token = $acumulusInvoice['token'];
+                $entryId = $acumulusInvoice['entryid'];
+            }
             else {
                 // If the invoice was sent as a concept, no entryid will be returned.
             }
-		}
-	}
+        }
+    }
 
-	/**
-	 * Returns if the order has been paid or not.
-	 *
-	 * OpenCart does not store any payment data, so determining the payment
-	 * status is not really possible for the Acumulus extension. Therefore this
-	 * is a very valid example of a change you may want to make to the invoice
-	 * before it is being send.
-	 *
-	 * Please fill in your own logic here in this method.
-	 *
-	 * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-	 *   The original order for which the invoice is being made.
-	 *
-	 * @return bool
-	 *   True if the order has been paid, false otherwise.
-	 *
-	 */
-	protected function isOrderPaid(Source $invoiceSource)
-	{
-		// static::$container->getLog()->info('ControllerExtensionModuleCustomiseAcumulusInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
-		return true;
-	}
+    /**
+     * Returns if the order has been paid or not.
+     *
+     * OpenCart does not store any payment data, so determining the payment
+     * status is not really possible for the Acumulus extension. Therefore this
+     * is a very valid example of a change you may want to make to the invoice
+     * before it is being send.
+     *
+     * Please fill in your own logic here in this method.
+     *
+     * @param \Siel\Acumulus\Invoice\Source $invoiceSource
+     *   The original order for which the invoice is being made.
+     *
+     * @return bool
+     *   True if the order has been paid, false otherwise.
+     *
+     */
+    private function isOrderPaid(Source $invoiceSource)
+    {
+        // static::$container->getLog()->info('ControllerExtensionModuleCustomiseAcumulusInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
+        return true;
+    }
 }
