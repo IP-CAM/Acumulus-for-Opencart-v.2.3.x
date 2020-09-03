@@ -1,6 +1,7 @@
 <?php
-
 /** @noinspection PhpUndefinedClassInspection */
+use Siel\Acumulus\Helpers\Container;
+
 /**
  * This is the Acumulus catalog side controller.
  */
@@ -26,7 +27,7 @@ class ControllerExtensionModuleAcumulus extends Controller
                 // OC1, OC2 and OC3 shared code.
                 require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
                 SielAcumulusAutoloader::register();
-                $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
+                $container = new Container($this->getShopNamespace());
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
             }
             $this->ocHelper = static::$staticOcHelper;
@@ -41,8 +42,9 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     protected function getShopNamespace()
     {
-        $result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
-        return $result;
+        return sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u',
+            substr(VERSION, 0, 1),
+            substr(VERSION, 2, 1));
     }
 
     /**
@@ -50,6 +52,8 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * The arguments passed in depend on the version of OC (and possibly if it
      * is OC self or another plugin that triggered the event).
+     *
+     * @noinspection PhpUnused
      */
     public function eventOrderUpdate()
     {
