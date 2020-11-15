@@ -109,6 +109,14 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
+     * Controller action: show/process the register form for this module.
+     */
+    public function register()
+    {
+        $this->ocHelper->register();
+    }
+
+    /**
      * Explicit confirmation step to allow to retain the settings.
      *
      * The normal uninstall action will unconditionally delete all settings.

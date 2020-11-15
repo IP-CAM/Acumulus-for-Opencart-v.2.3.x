@@ -3,9 +3,9 @@
   <div class="page-header">
     <div class="container-fluid">
       <div class="pull-right">
-        <button type="submit" form="form-account" data-toggle="tooltip" title="<?= $button_save; ?>" class="btn btn-primary"><i class="fa <?= $button_icon ?>"></i></button>
+<?php if ($button_save) { ?>        <button type="submit" form="form-account" data-toggle="tooltip" title="<?= $button_save; ?>" class="btn btn-primary"><i class="fa <?= $button_icon ?>"></i></button><?php } ?>
         <!--suppress HtmlUnknownTarget -->
-        <a href="<?= $cancel; ?>" data-toggle="tooltip" title="<?= $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a>
+<?php if ($button_cancel) { ?>        <a href="<?= $cancel; ?>" data-toggle="tooltip" title="<?= $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a><?php } ?>
       </div>
       <h1><?= $heading_title; ?></h1>
       <ul class="breadcrumb">
